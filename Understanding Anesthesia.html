@@ -1,0 +1,651 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Understanding Anesthesia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a clinical reference guide. Patient-monitor hero, contents strip, then numbered chapters in one reading column. */
+:root {
+  --bg: #eef3f4;
+  --surface: #ffffff;
+  --ink: #142629;
+  --muted: #4a5f63;
+  --rule: #cbd8da;
+  --accent: #0b6e73;
+  --accent-soft: #dcecec;
+  --warn: #9a5b00;
+  --warn-soft: #fbf0dc;
+  --monitor: #0f2326;
+  --trace: #39d0a6;
+  --spo2: #6fc3ff;
+  --co2: #f2c94c;
+  --bp: #ff8a7a;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1a1c; --surface: #132427; --ink: #e3eeef; --muted: #a3b8bb;
+    --rule: #283c3f; --accent: #4fc3c0; --accent-soft: #173638;
+    --warn: #f0b85a; --warn-soft: #2e2412; --monitor: #081214; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1a1c; --surface: #132427; --ink: #e3eeef; --muted: #a3b8bb;
+  --rule: #283c3f; --accent: #4fc3c0; --accent-soft: #173638;
+  --warn: #f0b85a; --warn-soft: #2e2412; --monitor: #081214; color-scheme: dark;
+}
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 1.0625rem; line-height: 1.68; }
+.wrap { max-width: 48rem; margin: 0 auto; padding-block: 2.5rem 3rem;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(2.6rem, 8vw, 4.4rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.5rem, 4vw, 1.9rem); font-weight: 700; }
+h3 { font-size: 1.1rem; font-weight: 700; }
+p { margin: 0; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+b { font-weight: 600; }
+.eyebrow { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.lede { font-size: 1.2rem; color: var(--muted); max-width: 40rem; }
+.pron { font-family: var(--mono); font-size: 0.88rem; color: var(--muted); }
+header { display: grid; gap: 0.9rem; }
+
+/* Monitor */
+.monitor { margin-top: 2rem; background: var(--monitor); border-radius: 10px; padding: 1rem; display: grid; gap: 0.75rem; color: #d7e6e8; }
+.monitor svg { width: 100%; height: 70px; display: block; }
+.trace { fill: none; stroke: var(--trace); stroke-width: 2; stroke-dasharray: 1400; stroke-dashoffset: 0; }
+@media (prefers-reduced-motion: no-preference) { .trace { animation: sweep 3.2s linear infinite; } }
+@keyframes sweep { from { stroke-dashoffset: 1400; } to { stroke-dashoffset: 0; } }
+.vitals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.5rem; }
+.vital { font-family: var(--mono); display: grid; gap: 0.1rem; border-top: 2px solid currentColor; padding-top: 0.35rem; }
+.vital b { font-size: clamp(1.2rem, 4vw, 1.8rem); font-weight: 500; font-variant-numeric: tabular-nums; }
+.vital span { font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; }
+.v-hr { color: var(--trace); } .v-spo2 { color: var(--spo2); } .v-co2 { color: var(--co2); } .v-bp { color: var(--bp); }
+.cap { font-family: var(--mono); font-size: 0.72rem; color: #8fa7aa; }
+@media (max-width: 520px) { .vitals { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* Key facts + contents */
+.facts { margin-top: 2rem; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.fact { display: grid; gap: 0.2rem; padding-top: 0.6rem; border-top: 2px solid var(--accent); }
+.fact b { font-family: var(--display); font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+.fact span { font-size: 0.92rem; color: var(--muted); line-height: 1.45; }
+@media (max-width: 560px) { .facts { grid-template-columns: 1fr; } }
+nav.toc { margin-top: 2.5rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 1.1rem 1.25rem; display: grid; gap: 0.6rem; }
+nav.toc ol { margin: 0; padding-left: 1.4rem; columns: 2; column-gap: 2rem; font-size: 0.97rem; }
+nav.toc li { break-inside: avoid; padding: 0.1rem 0; }
+@media (max-width: 560px) { nav.toc ol { columns: 1; } }
+
+/* Chapters */
+section { margin-top: 4rem; display: grid; gap: 1.1rem; scroll-margin-top: 1rem; }
+.chap { display: flex; gap: 0.75rem; align-items: baseline; }
+.chap .n { font-family: var(--mono); font-size: 0.8rem; color: var(--accent); }
+.simple { background: var(--accent-soft); border-radius: 8px; padding: 0.9rem 1.1rem; display: grid; gap: 0.3rem; }
+.simple .lbl { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.caution { background: var(--warn-soft); border-radius: 8px; padding: 0.9rem 1.1rem; display: grid; gap: 0.3rem; }
+.caution .lbl { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--warn); }
+
+.types { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; }
+.type { background: var(--surface); padding: 1.1rem; display: grid; gap: 0.45rem; align-content: start; min-width: 0; }
+.type .tag { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; }
+.type p { font-size: 0.96rem; color: var(--muted); }
+.type dl { margin: 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.2rem 0.6rem; font-size: 0.88rem; }
+.type dt { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; padding-top: 0.15rem; }
+.type dd { margin: 0; }
+@media (max-width: 600px) { .types { grid-template-columns: 1fr; } }
+
+/* Sedation scale */
+.scale { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.lvl { padding: 0.75rem; border-radius: 6px; display: grid; gap: 0.25rem; align-content: start; min-width: 0; color: var(--ink); }
+.lvl b { font-family: var(--display); font-size: 0.98rem; }
+.lvl span { font-size: 0.85rem; line-height: 1.4; color: var(--muted); }
+.l1 { background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+.l2 { background: color-mix(in srgb, var(--accent) 22%, var(--surface)); }
+.l3 { background: color-mix(in srgb, var(--accent) 36%, var(--surface)); }
+.l4 { background: color-mix(in srgb, var(--accent) 52%, var(--surface)); }
+.scale-axis { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+@media (max-width: 600px) { .scale { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+.phases { list-style: none; margin: 0; padding: 0; display: grid; counter-reset: ph; }
+.phases li { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 1rem; padding: 1.1rem 0; border-top: 1px solid var(--rule); counter-increment: ph; }
+.phases li::before { content: counter(ph); font-family: var(--display); font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1; }
+.phases li div { display: grid; gap: 0.35rem; }
+.phases .when { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.93rem; line-height: 1.5; }
+th, td { text-align: left; padding: 0.65rem 0.9rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 500; white-space: nowrap; }
+td.k { font-family: var(--mono); color: var(--accent); white-space: nowrap; font-size: 0.85rem; }
+td.num { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.drugs { min-width: 40rem; }
+.monit { min-width: 36rem; }
+
+.timeline { display: grid; gap: 0; }
+.ev { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 1rem; padding: 0.75rem 0; border-top: 1px solid var(--rule); }
+.ev .yr { font-family: var(--mono); font-weight: 500; color: var(--accent); font-variant-numeric: tabular-nums; }
+.ev.ca .yr::after { content: " CA"; font-size: 0.65rem; vertical-align: super; color: var(--muted); }
+
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+.two > div { display: grid; gap: 0.5rem; align-content: start; min-width: 0; }
+@media (max-width: 600px) { .two { grid-template-columns: 1fr; } }
+ul.tips { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.5rem; }
+
+.risk { display: grid; gap: 0.5rem; }
+.risk-row { display: grid; grid-template-columns: minmax(0, 1fr) 9rem; gap: 1rem; padding: 0.6rem 0; border-top: 1px solid var(--rule); align-items: baseline; }
+.risk-row .f { font-family: var(--mono); font-size: 0.85rem; text-align: right; font-variant-numeric: tabular-nums; }
+.risk-row .c { font-size: 0.85rem; color: var(--muted); display: block; }
+.pill { display: inline-block; font-family: var(--mono); font-size: 0.68rem; padding: 0.05rem 0.45rem; border-radius: 999px; margin-left: 0.4rem; vertical-align: 0.1em; border: 1px solid currentColor; }
+.p-common { color: var(--accent); } .p-rare { color: var(--warn); }
+@media (max-width: 480px) { .risk-row { grid-template-columns: 1fr; gap: 0.15rem; } .risk-row .f { text-align: left; } }
+
+.myths { display: grid; gap: 0; }
+.myth { display: grid; gap: 0.3rem; padding: 0.9rem 0; border-top: 1px solid var(--rule); }
+.myth .m { font-style: italic; color: var(--muted); }
+.myth .m::before { content: "Myth  "; font-style: normal; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--warn); }
+.myth .t::before { content: "Fact  "; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+
+details { border-top: 1px solid var(--rule); padding: 0.8rem 0; }
+details:last-of-type { border-bottom: 1px solid var(--rule); }
+summary { cursor: pointer; font-family: var(--display); font-weight: 700; font-size: 1.02rem; list-style-position: outside; }
+details p { margin-top: 0.5rem; color: var(--muted); }
+
+dl.gloss { margin: 0; display: grid; grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr); gap: 0; }
+dl.gloss dt, dl.gloss dd { padding: 0.55rem 0; border-top: 1px solid var(--rule); margin: 0; }
+dl.gloss dt { font-family: var(--display); font-weight: 700; padding-right: 1rem; }
+@media (max-width: 520px) { dl.gloss { grid-template-columns: 1fr; } dl.gloss dd { border-top: 0; padding-top: 0; } }
+
+.note { border-left: 3px solid var(--accent); padding: 0.2rem 0 0.2rem 1rem; color: var(--muted); font-size: 0.95rem; }
+/* Medicine explorer */
+.explorer { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 1.1rem; display: grid; gap: 1rem; }
+.groups { display: grid; gap: 0.75rem; }
+.grp { display: grid; gap: 0.4rem; }
+.grp-name { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip { font-family: var(--display); font-weight: 500; font-size: 0.95rem; padding: 0.45rem 0.85rem; border-radius: 999px; border: 1px solid var(--rule); background: var(--bg); color: var(--ink); cursor: pointer; transition: background 0.15s, border-color 0.15s, color 0.15s; }
+.chip:hover { border-color: var(--accent); color: var(--accent); }
+.chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.card { border-top: 2px solid var(--accent); padding-top: 1rem; display: grid; gap: 0.9rem; }
+.card-head { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; align-items: baseline; justify-content: space-between; }
+.card-head h3 { font-size: 1.6rem; }
+.card-head .cls { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+.stat { display: grid; gap: 0.1rem; background: var(--bg); border-radius: 6px; padding: 0.6rem 0.75rem; min-width: 0; }
+.stat span { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.stat b { font-size: 0.95rem; line-height: 1.35; }
+@media (max-width: 560px) { .stats { grid-template-columns: 1fr; } }
+.card dl { margin: 0; display: grid; gap: 0.7rem; }
+.card dt { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.card dd { margin: 0.15rem 0 0; }
+.card .fun { background: var(--accent-soft); border-radius: 6px; padding: 0.7rem 0.9rem; font-size: 0.96rem; }
+.card .fun::before { content: "Did you know? "; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+
+footer { margin-top: 4rem; padding-top: 1.25rem; border-top: 1px solid var(--rule); font-size: 0.85rem; color: var(--muted); display: grid; gap: 0.6rem; }
+footer .rights { font-family: var(--mono); font-size: 0.8rem; color: var(--ink); letter-spacing: 0.04em; }
+</style>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">A complete, plain-language guide</p>
+    <h1>Anesthesia</h1>
+    <p class="pron">an·es·the·sia &nbsp;/ˌanəsˈθiːʒə/ &nbsp;· from Greek <i>an-</i> “without” + <i>aisthēsis</i> “feeling”</p>
+    <p class="lede">Anesthesia is the medical practice of safely switching off pain, awareness or movement so that doctors can perform surgery and other procedures. It is one of the most important inventions in the history of medicine, and today it is also one of the safest.</p>
+  </header>
+
+  <div class="monitor" role="img" aria-label="Example patient monitor showing heart rate 72, oxygen saturation 98 percent, end-tidal CO2 35 mmHg and blood pressure 118 over 76">
+    <svg viewBox="0 0 700 70" preserveAspectRatio="none" aria-hidden="true">
+      <polyline class="trace" points="0,40 60,40 72,40 80,30 88,40 100,40 108,46 116,6 124,60 132,40 150,40 166,32 182,40 240,40 252,40 260,30 268,40 280,40 288,46 296,6 304,60 312,40 330,40 346,32 362,40 420,40 432,40 440,30 448,40 460,40 468,46 476,6 484,60 492,40 510,40 526,32 542,40 600,40 612,40 620,30 628,40 640,40 648,46 656,6 664,60 672,40 700,40"/>
+    </svg>
+    <div class="vitals">
+      <div class="vital v-hr"><span>HR · bpm</span><b>72</b></div>
+      <div class="vital v-spo2"><span>SpO₂ · %</span><b>98</b></div>
+      <div class="vital v-co2"><span>EtCO₂ · mmHg</span><b>35</b></div>
+      <div class="vital v-bp"><span>NIBP · mmHg</span><b>118/76</b></div>
+    </div>
+    <p class="cap">Example readings from a healthy adult under general anesthesia. Chapter 6 explains what each number means.</p>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><b>1846</b><span>The year ether anesthesia was first shown in public, in Boston.</span></div>
+    <div class="fact"><b>~1 in 100,000</b><span>Rough estimated risk of death caused by anesthesia alone in healthy patients today.</span></div>
+    <div class="fact"><b>9+ years</b><span>Medical school plus specialty training to become an anesthesiologist in Canada.</span></div>
+  </div>
+
+  <nav class="toc" aria-label="Contents">
+    <p class="eyebrow">Contents</p>
+    <ol>
+      <li><a href="#what">What anesthesia is</a></li>
+      <li><a href="#how">How it works in the body</a></li>
+      <li><a href="#types">The four types</a></li>
+      <li><a href="#medicines">The medicines</a> · <a href="#explore">explore each one</a></li>
+      <li><a href="#phases">Step by step: a general anesthetic</a></li>
+      <li><a href="#monitoring">Monitoring: keeping you safe</a></li>
+      <li><a href="#team">The anesthesia team</a></li>
+      <li><a href="#prepare">Before and after surgery</a></li>
+      <li><a href="#risks">Risks and side effects</a></li>
+      <li><a href="#history">History</a></li>
+      <li><a href="#myths">Myths and facts</a></li>
+      <li><a href="#faq">Common questions</a></li>
+      <li><a href="#glossary">Glossary</a></li>
+    </ol>
+  </nav>
+
+  <section id="what">
+    <div class="chap"><span class="n">01</span><h2>What anesthesia is</h2></div>
+    <p>Anesthesia means using medicines to create a temporary, reversible state in which a person does not feel pain during a medical procedure. Depending on the type, the person may also be unconscious, unable to remember, and unable to move.</p>
+    <p>Doctors describe a complete general anesthetic as having four goals:</p>
+    <ul class="tips">
+      <li><b>Unconsciousness</b> (hypnosis): you are not awake or aware.</li>
+      <li><b>Pain control</b> (analgesia): your body’s pain signals are blocked.</li>
+      <li><b>No memory</b> (amnesia): you do not remember the operation.</li>
+      <li><b>Stillness</b> (immobility): your muscles are relaxed so the surgeon can work safely.</li>
+    </ul>
+    <div class="simple"><span class="lbl">In simple words</span><p>Anesthesia is not normal sleep. In normal sleep, a loud noise or a pinch would wake you. Under general anesthesia, nothing wakes you until the doctor stops the medicine.</p></div>
+  </section>
+
+  <section id="how">
+    <div class="chap"><span class="n">02</span><h2>How it works in the body</h2></div>
+    <p>Your brain and nerves work by sending electrical and chemical signals. Anesthetic medicines interrupt those signals in different places.</p>
+    <div class="two">
+      <div>
+        <h3>In the brain (general anesthesia)</h3>
+        <p>Most general anesthetics, such as propofol and anesthetic gases, boost the brain’s main “calming” chemical messenger, called <b>GABA</b>. This slows down brain activity until the parts of the brain that create awareness stop communicating with each other. Ketamine works differently, by blocking a messenger receptor called <b>NMDA</b>.</p>
+        <p>Scientists still do not fully understand how consciousness is switched off. It remains an active area of research.</p>
+      </div>
+      <div>
+        <h3>In the nerves (local and regional)</h3>
+        <p>Local anesthetics such as lidocaine block tiny gates on nerve cells called <b>sodium channels</b>. Without those gates, a nerve cannot send its signal. The message “this hurts” never reaches the brain, even though you are fully awake.</p>
+      </div>
+    </div>
+    <div class="simple"><span class="lbl">Analogy</span><p>Think of your nerves as telephone wires and your brain as the phone. Local anesthesia cuts one wire for a while. General anesthesia turns off the phone itself, so no calls get through from anywhere.</p></div>
+  </section>
+
+  <section id="types">
+    <div class="chap"><span class="n">03</span><h2>The four types of anesthesia</h2></div>
+    <p>The type chosen depends on the operation, your health, and sometimes your preference. Many operations combine two types, for example general anesthesia plus a nerve block for better pain control afterwards.</p>
+    <div class="types">
+      <div class="type"><span class="tag">Fully unconscious</span><h3>General anesthesia</h3><p>Medicines given through a vein (IV) or breathed in as a gas make you completely unconscious. A device is usually placed to protect your breathing.</p>
+        <dl><dt>Used for</dt><dd>Heart, brain, abdominal and most major surgery</dd><dt>Awake?</dt><dd>No</dd></dl></div>
+      <div class="type"><span class="tag">A large region is numb</span><h3>Regional anesthesia</h3><p>Medicine is injected near a group of nerves to numb a whole area. Includes spinal, epidural and nerve blocks.</p>
+        <dl><dt>Used for</dt><dd>Caesarean births, hip and knee surgery, arm surgery</dd><dt>Awake?</dt><dd>Yes, or lightly sedated</dd></dl></div>
+      <div class="type"><span class="tag">A small spot is numb</span><h3>Local anesthesia</h3><p>An injection, spray or cream numbs only the small area being treated.</p>
+        <dl><dt>Used for</dt><dd>Stitches, dental fillings, skin biopsies</dd><dt>Awake?</dt><dd>Yes, fully</dd></dl></div>
+      <div class="type"><span class="tag">Calm and drowsy</span><h3>Sedation</h3><p>Medicine relaxes you and reduces awareness. Often combined with local anesthesia. Also called “monitored anesthesia care.”</p>
+        <dl><dt>Used for</dt><dd>Colonoscopy, cataract surgery, some scans</dd><dt>Awake?</dt><dd>Partly, depending on depth</dd></dl></div>
+    </div>
+    <h3>Sedation is a scale, not a switch</h3>
+    <p>Doctors use the American Society of Anesthesiologists’ four levels to describe how deeply someone is sedated:</p>
+    <div class="scale">
+      <div class="lvl l1"><b>Minimal</b><span>Relaxed. Answers questions normally.</span></div>
+      <div class="lvl l2"><b>Moderate</b><span>Drowsy. Responds when spoken to or touched.</span></div>
+      <div class="lvl l3"><b>Deep</b><span>Hard to wake. May need help breathing.</span></div>
+      <div class="lvl l4"><b>General anesthesia</b><span>Cannot be woken, even by pain.</span></div>
+    </div>
+    <div class="scale-axis"><span>Lighter</span><span>Deeper</span></div>
+  </section>
+
+  <section id="medicines">
+    <div class="chap"><span class="n">04</span><h2>The medicines</h2></div>
+    <p>No single drug does everything. The anesthesia provider builds a combination, sometimes called <b>balanced anesthesia</b>, so each medicine can be used in a smaller, safer dose.</p>
+    <div class="tablewrap">
+      <table class="drugs">
+        <thead><tr><th>Group</th><th>What it does</th><th>Common examples</th></tr></thead>
+        <tbody>
+          <tr><td class="k">IV induction agents</td><td>Put you to sleep quickly, usually in under a minute</td><td>Propofol, ketamine, etomidate</td></tr>
+          <tr><td class="k">Inhaled anesthetics</td><td>Gases breathed in to keep you asleep during the operation</td><td>Sevoflurane, desflurane, isoflurane, nitrous oxide</td></tr>
+          <tr><td class="k">Opioid pain relievers</td><td>Block strong pain during and after surgery</td><td>Fentanyl, remifentanil, morphine, hydromorphone</td></tr>
+          <tr><td class="k">Muscle relaxants</td><td>Relax muscles for breathing tubes and surgery</td><td>Rocuronium, succinylcholine, cisatracurium</td></tr>
+          <tr><td class="k">Reversal agents</td><td>Undo the effects of other drugs at the end</td><td>Sugammadex, neostigmine, naloxone</td></tr>
+          <tr><td class="k">Calming medicines</td><td>Reduce anxiety and memory before the operation</td><td>Midazolam, dexmedetomidine</td></tr>
+          <tr><td class="k">Local anesthetics</td><td>Numb nerves for local and regional anesthesia</td><td>Lidocaine, bupivacaine, ropivacaine</td></tr>
+          <tr><td class="k">Anti-nausea</td><td>Prevent vomiting after surgery</td><td>Ondansetron, dexamethasone</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3 id="explore">Explore each medicine</h3>
+    <p>Tap a medicine to see what it does, how it is given, how fast it works, and an interesting fact about it.</p>
+    <div class="explorer">
+      <div class="groups" id="groups"></div>
+      <div class="card" id="card" aria-live="polite"></div>
+    </div>
+    <p class="note">Doses are chosen by the anesthesia team for each patient based on weight, age and health. This guide does not list doses on purpose.</p>
+  </section>
+
+  <section id="phases">
+    <div class="chap"><span class="n">05</span><h2>Step by step: a general anesthetic</h2></div>
+    <p>Pilots often compare anesthesia to a flight: the most important moments are the takeoff and the landing.</p>
+    <ol class="phases">
+      <li><div><span class="when">Hours to weeks before</span><h3>Pre-operative assessment</h3><p>The team reviews your health, medicines, allergies and past surgeries, examines your airway, and explains the plan. You sign a consent form.</p></div></li>
+      <li><div><span class="when">In the operating room</span><h3>Preparation</h3><p>An IV line is placed in your hand or arm. Stickers for the heart monitor, a blood-pressure cuff and a finger clip for oxygen are attached. You breathe pure oxygen through a mask for a few minutes to fill your lungs with a safety reserve.</p></div></li>
+      <li><div><span class="when">About 30 to 60 seconds</span><h3>Induction (“takeoff”)</h3><p>The induction drug goes into your IV. Many people feel a cool or stinging sensation in the arm, then fall asleep quickly. Children often fall asleep by breathing gas through a mask instead.</p></div></li>
+      <li><div><span class="when">Just after you fall asleep</span><h3>Securing the airway</h3><p>Because anesthesia can stop you from breathing on your own, the team protects your airway with one of three devices: a <b>face mask</b>, a <b>laryngeal mask airway</b> (a soft cuff that sits above the voice box), or an <b>endotracheal tube</b> (a tube placed through the vocal cords into the windpipe). A ventilator can then breathe for you.</p></div></li>
+      <li><div><span class="when">The whole operation</span><h3>Maintenance</h3><p>The anesthesia provider stays with you the entire time. They adjust the gas or IV medicines minute by minute, give fluids, manage pain and blood pressure, keep you warm, and respond to anything the surgery causes.</p></div></li>
+      <li><div><span class="when">Last 10 to 20 minutes</span><h3>Emergence (“landing”)</h3><p>The anesthetics are turned off and reversal drugs are given if needed. As you begin to breathe on your own and respond, the breathing device is removed, often before you remember anything.</p></div></li>
+      <li><div><span class="when">Usually 30 to 90 minutes</span><h3>Recovery room</h3><p>Nurses in the post-anesthesia care unit (PACU) monitor you, treat pain and nausea, and decide when you are ready to go home or to a hospital ward.</p></div></li>
+    </ol>
+  </section>
+
+  <section id="monitoring">
+    <div class="chap"><span class="n">06</span><h2>Monitoring: keeping you safe</h2></div>
+    <p>Canadian and American standards require continuous monitoring of oxygen, breathing, circulation and temperature during every anesthetic. These are the numbers on the screen at the top of this page.</p>
+    <div class="tablewrap">
+      <table class="monit">
+        <thead><tr><th>Monitor</th><th>What it measures</th><th>Usual adult range</th></tr></thead>
+        <tbody>
+          <tr><td class="k">ECG · HR</td><td>The heart’s electrical rhythm and heart rate, from stickers on the chest</td><td class="num">60–100 bpm</td></tr>
+          <tr><td class="k">SpO₂</td><td>How much oxygen your blood carries, from a light clip on the finger (pulse oximetry)</td><td class="num">95–100 %</td></tr>
+          <tr><td class="k">EtCO₂</td><td>Carbon dioxide in each breath out (capnography). Confirms the breathing tube is in the right place and that you are breathing well</td><td class="num">35–45 mmHg</td></tr>
+          <tr><td class="k">NIBP</td><td>Blood pressure, from an automatic cuff, usually every 3 to 5 minutes</td><td class="num">≈ 90/60–140/90</td></tr>
+          <tr><td class="k">Temp</td><td>Body temperature. Anesthesia makes the body lose heat, so patients are actively warmed</td><td class="num">36–37.5 °C</td></tr>
+          <tr><td class="k">BIS</td><td>Optional brain-activity monitor that estimates how deeply asleep you are, on a scale of 0 to 100</td><td class="num">40–60</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="simple"><span class="lbl">Why this matters</span><p>When pulse oximetry and capnography became standard in the 1980s, deaths from anesthesia fell sharply. The machine now warns the team of a problem seconds after it begins, often before it can cause harm.</p></div>
+  </section>
+
+  <section id="team">
+    <div class="chap"><span class="n">07</span><h2>The anesthesia team</h2></div>
+    <div class="two">
+      <div>
+        <h3>Anesthesiologist</h3>
+        <p>A medical doctor who completes medical school and then five years of specialty residency, certified in Canada by the Royal College of Physicians and Surgeons. They lead the anesthesia plan and are experts in emergencies, airway management, pain medicine and critical care.</p>
+      </div>
+      <div>
+        <h3>Anesthesia assistant and nurse anesthetist</h3>
+        <p>In Canada, <b>anesthesia assistants</b> (usually respiratory therapists or nurses with extra training) help the anesthesiologist. In the United States, <b>certified registered nurse anesthetists</b> (CRNAs) also give anesthesia independently in many states.</p>
+      </div>
+    </div>
+    <h3>The ASA physical status classification</h3>
+    <p>Before surgery, the team grades your overall health. A higher class means the team will plan more carefully, not that surgery cannot happen.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Class</th><th>Meaning</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td class="k">ASA I</td><td>Healthy person</td><td>Fit, non-smoking adult</td></tr>
+          <tr><td class="k">ASA II</td><td>Mild, well-controlled illness</td><td>Treated high blood pressure, mild asthma</td></tr>
+          <tr><td class="k">ASA III</td><td>Serious illness that limits activity</td><td>Poorly controlled diabetes, severe obesity</td></tr>
+          <tr><td class="k">ASA IV</td><td>Serious illness that constantly threatens life</td><td>Recent heart attack, severe heart failure</td></tr>
+          <tr><td class="k">ASA V</td><td>Not expected to survive without surgery</td><td>Ruptured aortic aneurysm</td></tr>
+          <tr><td class="k">ASA VI</td><td>Brain-dead organ donor</td><td>Organ donation surgery</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">An “E” is added for emergencies, for example “ASA II E.”</p>
+  </section>
+
+  <section id="prepare">
+    <div class="chap"><span class="n">08</span><h2>Before and after surgery</h2></div>
+    <div class="two">
+      <div>
+        <h3>Before</h3>
+        <ul class="tips">
+          <li><b>Fasting.</b> An empty stomach lowers the risk of stomach contents entering the lungs. Typical rules: no solid food for about 6 to 8 hours, and clear fluids (water, apple juice, black tea) until about 2 hours before. Always follow your own hospital’s instructions.</li>
+          <li><b>Medicines.</b> Bring a full list, including vitamins and herbal products. Some blood thinners and diabetes medicines must be paused.</li>
+          <li><b>Tell the team</b> about allergies, loose teeth, snoring or sleep apnea, and any family member who had a bad reaction to anesthesia.</li>
+          <li><b>Stop smoking</b> as early as possible. Even a few days helps your lungs.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>After</h3>
+        <ul class="tips">
+          <li><b>Expect grogginess</b> for several hours. It is normal to feel tired the next day.</li>
+          <li><b>Do not drive</b>, use machines, drink alcohol, sign legal papers or make big decisions for at least 24 hours.</li>
+          <li><b>Have an adult</b> take you home and, ideally, stay with you the first night.</li>
+          <li><b>Start eating slowly</b> with light foods and drinks.</li>
+          <li><b>Call your doctor</b> if you have trouble breathing, chest pain, a fever, or nausea that does not stop.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="risks">
+    <div class="chap"><span class="n">09</span><h2>Risks and side effects</h2></div>
+    <p>Modern anesthesia is very safe, especially for healthy people. Most side effects are mild and last a few hours. Your actual risk depends on your health and the type of surgery.</p>
+    <div class="risk">
+      <div class="risk-row"><div><b>Nausea and vomiting</b><span class="pill p-common">common</span><span class="c">Higher in women, non-smokers and people with motion sickness. Usually preventable with medicine.</span></div><span class="f">about 1 in 3</span></div>
+      <div class="risk-row"><div><b>Sore throat</b><span class="pill p-common">common</span><span class="c">From the breathing tube. Usually gone within 1 to 2 days.</span></div><span class="f">up to 1 in 2</span></div>
+      <div class="risk-row"><div><b>Shivering, feeling cold</b><span class="pill p-common">common</span><span class="c">Treated with warm blankets and warm air.</span></div><span class="f">frequent</span></div>
+      <div class="risk-row"><div><b>Confusion after waking</b><span class="pill p-common">common in older adults</span><span class="c">Called post-operative delirium. Usually improves within days.</span></div><span class="f">varies with age</span></div>
+      <div class="risk-row"><div><b>Damage to teeth</b><span class="pill p-rare">uncommon</span><span class="c">During placement of the breathing tube.</span></div><span class="f">about 1 in 4,500</span></div>
+      <div class="risk-row"><div><b>Awareness under anesthesia</b><span class="pill p-rare">rare</span><span class="c">Briefly remembering part of the operation. Estimates vary with how it is measured.</span></div><span class="f">1 in 1,000 to 1 in 19,000</span></div>
+      <div class="risk-row"><div><b>Severe allergic reaction</b><span class="pill p-rare">rare</span><span class="c">Most often to muscle relaxants or antibiotics.</span></div><span class="f">about 1 in 10,000</span></div>
+      <div class="risk-row"><div><b>Malignant hyperthermia</b><span class="pill p-rare">very rare</span><span class="c">An inherited reaction to some gases and succinylcholine that causes a dangerous rise in temperature. Treated with the antidote dantrolene, which every operating room keeps ready.</span></div><span class="f">1 in 10,000 to 1 in 250,000</span></div>
+      <div class="risk-row"><div><b>Death caused by anesthesia</b><span class="pill p-rare">very rare</span><span class="c">In healthy patients. The risk is higher in people who are very ill.</span></div><span class="f">≈ 1 in 100,000 or less</span></div>
+    </div>
+    <div class="caution"><span class="lbl">Keep in mind</span><p>These figures are general estimates from published studies. Your anesthesiologist can explain the risks that apply to you.</p></div>
+  </section>
+
+  <section id="history">
+    <div class="chap"><span class="n">10</span><h2>History of anesthesia</h2></div>
+    <p>Before anesthesia, surgeons had to work as fast as possible while patients were held down. Alcohol, opium and herbal mixtures dulled pain only a little. The discoveries below changed medicine forever.</p>
+    <div class="timeline">
+      <div class="ev"><span class="yr">1799</span><p>English chemist Humphry Davy notices that nitrous oxide (“laughing gas”) relieves pain and suggests it could be used in surgery.</p></div>
+      <div class="ev"><span class="yr">1842</span><p>Dr. Crawford Long in Georgia uses ether to remove a tumour from a patient’s neck but does not publish his work until years later.</p></div>
+      <div class="ev"><span class="yr">1844</span><p>Dentist Horace Wells uses nitrous oxide for tooth extraction. His public demonstration fails when the patient cries out.</p></div>
+      <div class="ev"><span class="yr">1846</span><p>On October 16, dentist William Morton gives ether at Massachusetts General Hospital in Boston while a surgeon removes a tumour painlessly. The day is still celebrated as <b>Ether Day</b>.</p></div>
+      <div class="ev"><span class="yr">1847</span><p>Scottish obstetrician James Young Simpson introduces chloroform.</p></div>
+      <div class="ev"><span class="yr">1853</span><p>Dr. John Snow gives chloroform to Queen Victoria during the birth of Prince Leopold, making anesthesia for childbirth socially accepted.</p></div>
+      <div class="ev"><span class="yr">1884</span><p>Austrian eye doctor Carl Koller uses cocaine drops to numb the eye, the first modern local anesthetic.</p></div>
+      <div class="ev"><span class="yr">1898</span><p>German surgeon August Bier performs the first spinal anesthetic.</p></div>
+      <div class="ev ca"><span class="yr">1942</span><p>In Montreal, Dr. Harold Griffith and Dr. Enid Johnson use curare as a muscle relaxant during surgery, a world first that transformed anesthesia.</p></div>
+      <div class="ev ca"><span class="yr">1943</span><p>The Canadian Anaesthetists’ Society is founded, with Harold Griffith as a founding leader.</p></div>
+      <div class="ev"><span class="yr">1956</span><p>Halothane, a safer non-flammable gas, enters use and replaces ether and chloroform.</p></div>
+      <div class="ev"><span class="yr">1980s</span><p>Pulse oximetry and capnography become standard. Propofol is introduced in 1986.</p></div>
+      <div class="ev"><span class="yr">Today</span><p>Ultrasound-guided nerve blocks, brain-activity monitors and new reversal drugs such as sugammadex make anesthesia more precise than ever.</p></div>
+    </div>
+    <p class="note">“CA” marks a Canadian milestone.</p>
+  </section>
+
+  <section id="myths">
+    <div class="chap"><span class="n">11</span><h2>Myths and facts</h2></div>
+    <div class="myths">
+      <div class="myth"><p class="m">Anesthesia is just a very deep sleep.</p><p class="t">It is a controlled, drug-induced state. Brain activity looks very different from sleep, and you cannot be woken by noise or touch.</p></div>
+      <div class="myth"><p class="m">Many people wake up in the middle of surgery.</p><p class="t">True awareness is rare, and the team monitors for signs of it throughout the operation.</p></div>
+      <div class="myth"><p class="m">The anesthesiologist leaves once you are asleep.</p><p class="t">A qualified anesthesia provider stays with you from the start to the end of the anesthetic.</p></div>
+      <div class="myth"><p class="m">You might not wake up.</p><p class="t">For healthy patients, serious complications are extremely rare. The medicines are short-acting and stop working soon after they are turned off.</p></div>
+      <div class="myth"><p class="m">If you had a bad reaction once, you can never have anesthesia again.</p><p class="t">Most reactions can be avoided next time with different medicines. Tell your team about your history.</p></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="chap"><span class="n">12</span><h2>Common questions</h2></div>
+    <div>
+      <details><summary>Will I dream under anesthesia?</summary><p>Some people report dream-like experiences, usually as they fall asleep or wake up. Most people remember nothing at all between falling asleep and waking in recovery.</p></details>
+      <details><summary>Why can’t I eat or drink before surgery?</summary><p>Anesthesia relaxes the muscles that normally stop food from coming back up. If the stomach is full, food or acid could enter the lungs and cause a serious lung infection called aspiration pneumonia.</p></details>
+      <details><summary>Why do I have to take off nail polish?</summary><p>Some dark polish can interfere with the finger clip that measures oxygen. Your nails and lips also help the team see your colour.</p></details>
+      <details><summary>Is anesthesia safe for children?</summary><p>Yes. Children’s hospitals have anesthesiologists trained specifically for babies and children. Parents can often stay with their child until they fall asleep.</p></details>
+      <details><summary>How long does it take to wake up?</summary><p>You usually start waking a few minutes after the medicines are turned off. Feeling fully clear-headed can take several hours, and tiredness may last into the next day.</p></details>
+      <details><summary>Can I choose the type of anesthesia?</summary><p>Often, yes. For many operations there is more than one safe option. Ask your anesthesiologist to explain the choices and the pros and cons of each.</p></details>
+    </div>
+  </section>
+
+  <section id="glossary">
+    <div class="chap"><span class="n">13</span><h2>Glossary</h2></div>
+    <dl class="gloss">
+      <dt>Analgesia</dt><dd>Relief from pain.</dd>
+      <dt>Anesthesiologist</dt><dd>A doctor who specializes in anesthesia.</dd>
+      <dt>Aspiration</dt><dd>When stomach contents enter the lungs.</dd>
+      <dt>Capnography</dt><dd>Measuring carbon dioxide in each breath out.</dd>
+      <dt>Emergence</dt><dd>The process of waking up from general anesthesia.</dd>
+      <dt>Epidural</dt><dd>Regional anesthesia given through a thin tube in the lower back, often for childbirth.</dd>
+      <dt>Induction</dt><dd>The start of general anesthesia, when you fall asleep.</dd>
+      <dt>Intubation</dt><dd>Placing a breathing tube into the windpipe.</dd>
+      <dt>IV</dt><dd>Intravenous: given directly into a vein.</dd>
+      <dt>PACU</dt><dd>Post-anesthesia care unit, also called the recovery room.</dd>
+      <dt>Pulse oximetry</dt><dd>Measuring blood oxygen with light through the fingertip.</dd>
+      <dt>Spinal</dt><dd>A single injection in the lower back that numbs the lower body.</dd>
+    </dl>
+  </section>
+
+  <footer>
+    <p class="note">This guide is for general education only and does not replace advice from a doctor. Your own anesthesia team is the best source of information about your care.</p>
+    <p>Sources: Canadian Anesthesiologists’ Society; American Society of Anesthesiologists (ASA Physical Status Classification System and Continuum of Depth of Sedation); Royal College of Anaesthetists, patient information; Wood Library-Museum of Anesthesiology.</p>
+    <p class="rights">© 2026 Yanis Mertani. All Rights Reserved.</p>
+  </footer>
+</div>
+
+<script>
+const MEDS = [
+  { group: "Put you to sleep", items: [
+    { name: "Propofol", cls: "IV induction agent", given: "Into a vein (IV)", onset: "About 30 to 45 seconds", lasts: "5 to 10 minutes after one dose",
+      does: "The most widely used medicine for putting patients to sleep. It strengthens the brain’s calming GABA signals so awareness switches off smoothly.",
+      used: "Starting general anesthesia, keeping patients asleep by continuous drip, and sedation for procedures such as colonoscopy.",
+      side: "Low blood pressure, slowed breathing, and a brief stinging feeling in the arm during injection.",
+      fun: "It looks like milk because it is mixed in soybean oil and egg. Its inventor, Scottish chemist John Glen, won the Lasker Award in 2018. People also tend to wake from it with less nausea." },
+    { name: "Ketamine", cls: "Dissociative anesthetic", given: "IV, into a muscle, or as a nasal spray", onset: "About 30 seconds IV, 3 to 5 minutes in a muscle", lasts: "10 to 20 minutes",
+      does: "Blocks NMDA receptors in the brain, creating a “dissociated” state: the mind is disconnected from the body. Unlike most anesthetics, it keeps breathing and blood pressure fairly stable.",
+      used: "Emergencies and trauma, children, patients with low blood pressure or asthma, field and military medicine, and strong pain relief.",
+      side: "Vivid dreams or hallucinations when waking up, more saliva, and raised heart rate and blood pressure.",
+      fun: "First made in 1962 and on the World Health Organization’s list of essential medicines. A related form, esketamine, is now also used to treat severe depression." },
+    { name: "Etomidate", cls: "IV induction agent", given: "Into a vein (IV)", onset: "About 30 to 60 seconds", lasts: "3 to 5 minutes",
+      does: "Puts patients to sleep with almost no effect on heart rate or blood pressure.",
+      used: "Very sick or injured patients whose heart could not tolerate a drop in blood pressure.",
+      side: "Small involuntary muscle jerks, nausea, and a temporary drop in the body’s cortisol (stress hormone) production.",
+      fun: "It is chosen mainly for what it does not do: keeping the heart steady makes it valuable in emergency rooms." }
+  ]},
+  { group: "Gases that keep you asleep", items: [
+    { name: "Sevoflurane", cls: "Inhaled anesthetic", given: "Breathed in through a mask or breathing tube", onset: "1 to 2 minutes", lasts: "Wears off within minutes after it is turned off",
+      does: "A vapour that keeps patients asleep during surgery. The anesthesia machine mixes it precisely with oxygen and air.",
+      used: "Maintaining general anesthesia in adults and children, and putting children to sleep with a mask instead of a needle.",
+      side: "Nausea after surgery, agitation in some children as they wake, and lower blood pressure.",
+      fun: "It has a sweet smell and does not irritate the airway, which is why children can fall asleep simply by breathing it." },
+    { name: "Desflurane", cls: "Inhaled anesthetic", given: "Breathed in through a breathing tube", onset: "1 to 2 minutes", lasts: "Very fast wake-up after it is turned off",
+      does: "Keeps patients asleep and allows one of the fastest wake-ups of any anesthetic gas.",
+      used: "Long operations and patients where fast recovery matters.",
+      side: "Irritates the airway (coughing, breath-holding) so it is not used for mask induction.",
+      fun: "It is a very powerful greenhouse gas, so many hospitals around the world, including in Canada, have reduced or stopped using it." },
+    { name: "Nitrous oxide", cls: "Inhaled gas", given: "Breathed in through a mask", onset: "Under a minute", lasts: "A few minutes after stopping",
+      does: "A mild anesthetic and pain reliever. Too weak to keep someone asleep on its own, so it is combined with other medicines.",
+      used: "Dentistry, pain relief during childbirth, and as an add-on during general anesthesia.",
+      side: "Nausea, dizziness, and it must not be used in some conditions where gas is trapped in the body.",
+      fun: "Known as “laughing gas.” It was first studied for pain relief in 1799, making it one of the oldest anesthetics still in use." }
+  ]},
+  { group: "Pain relief", items: [
+    { name: "Fentanyl", cls: "Opioid", given: "IV, patch, or in epidurals", onset: "1 to 2 minutes IV", lasts: "30 to 60 minutes after one dose",
+      does: "A very strong pain reliever that blocks pain signals in the brain and spinal cord.",
+      used: "Pain control during surgery, in epidurals for childbirth, and in intensive care.",
+      side: "Slowed or stopped breathing, which is why patients are closely monitored. Also nausea and itching.",
+      fun: "About 100 times stronger than morphine. It was created in 1960 by Belgian chemist Paul Janssen. In hospital it is very safe because trained staff control every dose." },
+    { name: "Remifentanil", cls: "Opioid", given: "Continuous IV drip", onset: "About 1 minute", lasts: "Wears off 3 to 10 minutes after stopping",
+      does: "A strong pain reliever that the anesthesia team can turn up or down almost instantly.",
+      used: "Operations where pain levels change quickly, and when a fast, clear wake-up is needed.",
+      side: "Slowed breathing, low heart rate, and sometimes more pain after surgery if not replaced with a longer-acting pain medicine.",
+      fun: "Enzymes in the blood break it down, so it wears off just as fast after a 10-hour operation as after a 10-minute one." },
+    { name: "Morphine", cls: "Opioid", given: "IV, by mouth, into a muscle, or in spinal anesthesia", onset: "5 to 10 minutes IV", lasts: "3 to 4 hours",
+      does: "A classic, long-lasting pain reliever.",
+      used: "Pain relief after surgery, often through a patient-controlled pump (PCA) that the patient presses when needed.",
+      side: "Nausea, itching, constipation, drowsiness and slowed breathing.",
+      fun: "It comes from the opium poppy and was isolated in 1804 by German pharmacist Friedrich Sertürner. He named it after Morpheus, the Greek god of dreams." }
+  ]},
+  { group: "Relax the muscles", items: [
+    { name: "Rocuronium", cls: "Muscle relaxant", given: "Into a vein (IV)", onset: "1 to 2 minutes", lasts: "30 to 60 minutes",
+      does: "Temporarily blocks the signal between nerves and muscles so the body is completely relaxed.",
+      used: "Placing a breathing tube and operations where muscles must be still, such as abdominal surgery.",
+      side: "Patients cannot breathe on their own while it works, so a ventilator breathes for them. Rare allergic reactions.",
+      fun: "It relaxes muscles but has no effect on awareness or pain, so it is always given together with anesthetics." },
+    { name: "Succinylcholine", cls: "Muscle relaxant", given: "IV, or into a muscle in emergencies", onset: "About 60 seconds", lasts: "5 to 10 minutes",
+      does: "The fastest-acting muscle relaxant. It briefly stimulates muscles, then leaves them relaxed.",
+      used: "Emergencies when a breathing tube must be placed as quickly as possible.",
+      side: "Muscle twitches and aches the next day, raised potassium levels, and it can trigger malignant hyperthermia in people at risk.",
+      fun: "Visible ripples of muscle twitching, called fasciculations, often show it has started working." }
+  ]},
+  { group: "Reversal and rescue", items: [
+    { name: "Sugammadex", cls: "Reversal agent", given: "Into a vein (IV)", onset: "Usually under 3 minutes", lasts: "Permanent: it removes the drug",
+      does: "Reverses rocuronium so muscles work again at the end of surgery.",
+      used: "Waking up after operations, and in emergencies when rocuronium needs to be undone quickly.",
+      side: "Rare allergic reactions and a slow heart rate. It can reduce how well hormonal birth control works for about a week.",
+      fun: "Its ring-shaped molecule wraps around rocuronium like a cage and traps it so it can no longer act." },
+    { name: "Naloxone", cls: "Opioid antidote", given: "IV, into a muscle, or nasal spray", onset: "1 to 2 minutes", lasts: "30 to 90 minutes",
+      does: "Pushes opioid drugs off their receptors and quickly reverses their effects, especially slowed breathing.",
+      used: "Reversing too much opioid after surgery, and treating opioid overdoses outside the hospital.",
+      side: "Sudden return of pain, withdrawal symptoms in people who take opioids regularly.",
+      fun: "Free take-home naloxone kits are available at many pharmacies in Alberta and across Canada." },
+    { name: "Dantrolene", cls: "Antidote", given: "Into a vein (IV)", onset: "Minutes", lasts: "Several hours",
+      does: "Stops muscles from releasing too much calcium, which is what happens in malignant hyperthermia.",
+      used: "The emergency treatment for malignant hyperthermia, a rare inherited reaction to anesthesia.",
+      side: "Muscle weakness and drowsiness.",
+      fun: "Every operating room that uses anesthetic gases must keep dantrolene ready, even though most will rarely or never need it." }
+  ]},
+  { group: "Calm and comfort", items: [
+    { name: "Midazolam", cls: "Benzodiazepine", given: "IV, by mouth, or nasal", onset: "2 to 5 minutes IV", lasts: "1 to 2 hours",
+      does: "Reduces anxiety and causes amnesia, so patients often do not remember the moments before surgery.",
+      used: "Calming patients before surgery, sedation for procedures, and as a syrup for anxious children.",
+      side: "Drowsiness, confusion in older adults, and slowed breathing in high doses.",
+      fun: "It has its own antidote, flumazenil, which can reverse it if needed." },
+    { name: "Dexmedetomidine", cls: "Sedative", given: "Continuous IV drip", onset: "5 to 10 minutes", lasts: "As long as the drip runs",
+      does: "Produces a calm, sleep-like sedation where patients can still be woken and keep breathing on their own.",
+      used: "Awake brain surgery, sedation in intensive care, and calming patients without slowing breathing.",
+      side: "Slow heart rate and low blood pressure.",
+      fun: "Its effect resembles natural sleep more closely than most sedatives, which is why it is used when doctors need the patient to answer questions during surgery." },
+    { name: "Ondansetron", cls: "Anti-nausea", given: "IV or by mouth", onset: "About 30 minutes", lasts: "Several hours",
+      does: "Blocks serotonin signals that trigger nausea and vomiting.",
+      used: "Preventing nausea after surgery, and nausea from chemotherapy.",
+      side: "Headache, constipation, and rare heart rhythm changes.",
+      fun: "It was first developed to help cancer patients with nausea from chemotherapy, then became a standard part of anesthesia." }
+  ]},
+  { group: "Numb the nerves", items: [
+    { name: "Lidocaine", cls: "Local anesthetic", given: "Injection, spray, cream or IV", onset: "1 to 5 minutes", lasts: "1 to 2 hours (longer with adrenaline)",
+      does: "Blocks sodium channels in nerves so they cannot send pain signals.",
+      used: "Stitches, dental work, numbing the skin before an IV, and reducing the sting of propofol.",
+      side: "Rarely, numbness of the lips, ringing in the ears or heart rhythm changes if too much reaches the blood.",
+      fun: "Created in Sweden in 1943. It is also used to treat some dangerous heart rhythms." },
+    { name: "Bupivacaine", cls: "Local anesthetic", given: "Spinal, epidural or nerve block injection", onset: "5 to 20 minutes", lasts: "Several hours",
+      does: "A long-acting local anesthetic that numbs large areas of the body.",
+      used: "Spinal anesthesia for caesarean births and joint replacements, epidurals and nerve blocks.",
+      side: "Low blood pressure with spinals, and serious heart effects if accidentally injected into a vein.",
+      fun: "If it reaches the bloodstream by accident, doctors can treat it with an IV fat emulsion that soaks up the drug, called lipid rescue." }
+  ]}
+];
+
+const groupsEl = document.getElementById("groups");
+const cardEl = document.getElementById("card");
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const all = [];
+
+MEDS.forEach(g => {
+  const grp = document.createElement("div");
+  grp.className = "grp";
+  grp.innerHTML = `<p class="grp-name">${esc(g.group)}</p><div class="chips"></div>`;
+  const chips = grp.querySelector(".chips");
+  g.items.forEach(m => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "chip";
+    b.id = "med-" + m.name.toLowerCase().replace(/\s+/g, "-");
+    b.textContent = m.name;
+    b.setAttribute("aria-pressed", "false");
+    b.addEventListener("click", () => show(m, b));
+    chips.appendChild(b);
+    all.push(b);
+  });
+  groupsEl.appendChild(grp);
+});
+
+function show(m, btn) {
+  all.forEach(b => b.setAttribute("aria-pressed", b === btn ? "true" : "false"));
+  cardEl.innerHTML = `
+    <div class="card-head"><h3>${esc(m.name)}</h3><span class="cls">${esc(m.cls)}</span></div>
+    <div class="stats">
+      <div class="stat"><span>How it is given</span><b>${esc(m.given)}</b></div>
+      <div class="stat"><span>Starts working</span><b>${esc(m.onset)}</b></div>
+      <div class="stat"><span>Lasts</span><b>${esc(m.lasts)}</b></div>
+    </div>
+    <dl>
+      <div><dt>What it does</dt><dd>${esc(m.does)}</dd></div>
+      <div><dt>When it is used</dt><dd>${esc(m.used)}</dd></div>
+      <div><dt>Possible side effects</dt><dd>${esc(m.side)}</dd></div>
+    </dl>
+    <p class="fun">${esc(m.fun)}</p>`;
+}
+
+show(MEDS[0].items[0], all[0]);
+</script>
+
+</body></html>
